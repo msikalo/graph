@@ -1,0 +1,88 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="./jsxgraph.css">
+
+  <script src="angular.min.js"></script>
+  <script src="jsxgraphcore.js"></script>
+  <script src="angular-jsx-graph.min.js"></script>
+
+  <script>
+    angular.module('app', ['jsxGraph'])
+        .controller('Ctrl', function($scope, $interval) {
+
+          var board;
+          
+	  this.mSlider; 
+          this.cSlider;
+
+	  $scope.formula = "FORMULA";	
+
+	  $scope.x = 1;
+
+	  $scope.m = 2;
+          $scope.c = 1;
+
+          this.cb = function(htmlboard) {
+              console.log("board init called");
+              board = htmlboard;
+              mSlider = board.create('slider', [[-4.5, -4.5], [-1, -4.5], [-10, 2, 10]], {snapWidth: 0.1});
+              cSlider = board.create('slider', [[0.5, -4.5], [3.5, -4.5], [-10, 1, 10]], {snapWidth: 0.1});
+       
+              board.create('functiongraph',
+                            [function(x){       
+						return mSlider.Value() * x + cSlider.Value()
+					}, -5, 5]
+                          );
+	  };
+          
+          $interval(function() { 
+				$scope.m = mSlider.Value().toFixed(1); 
+				$scope.c = cSlider.Value().toFixed(1);  
+				
+				var m = mSlider.Value().toFixed(1); 
+				if (m % 1 === 0) m = Math.round(m);
+	
+				var c = cSlider.Value().toFixed(1);  
+				if (c % 1 === 0) c = Math.round(c);
+
+                                var smx, sign, sc;
+
+				sign= ((c>0)?"+":"-");	
+				
+                                if (m==0.0) { smx=""; sign="";}
+                                if (m==1.0) { smx="x"; }
+                                if ((m!=0.0)&&(m!=1.0)) { smx=m+"x";}
+
+                                if (c==0.0) { sc=""; sign=""}
+                                if (c!=0.0) { sc=""+Math.abs(c);}
+
+				if ((m==0)&&(c==0)) { smx=""; sign=""; sc="0";}
+				if ((m==0)&&(c<0)) { smx=""; sign="-"; sc=""+Math.abs(c);}
+
+                                $scope.formula="y="+smx+sign+sc;
+
+
+
+				//$scope.x++;
+				console.log("$scope.m=" + $scope.m + ", c=" + $scope.c + ", x=" +$scope.x );
+				//$scope.$apply();
+			}, 1000);
+
+        });
+  </script>
+</head>
+
+<body ng-app="app">
+<div ng-controller="Ctrl as ctrl">
+
+  <div id="box1" class="jxgbox" style="width:600px; height:600px;"
+      jxg-board="{axis: true, grid: true}" jxg-callback="ctrl.cb"></div>
+
+  <br/>
+
+         {{formula}}
+
+</div>
+</body>
+</html>
