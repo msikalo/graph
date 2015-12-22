@@ -39,6 +39,7 @@
 						return mSlider.Value() * x * x +  bSlider.Value() * x + cSlider.Value()
 					}, -10, 10]
                           );
+	      board.setBoundingBox([-12,12,12,-12], true);	
 	  };
           
           $interval(function() { 
